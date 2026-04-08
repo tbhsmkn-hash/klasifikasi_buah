@@ -1,63 +1,42 @@
 import streamlit as st
 import tensorflow as tf
-from PIL import Image
-import nuimport streamlit as st
-import tensorflow as tf
 import numpy as np
 from PIL import Image
 
-# 1. Load Model (Pastikan nama file sesuai di GitHub)
+# 1. Load Model (Pastikan nama file .keras sama dengan yang ada di GitHub)
+# Jika file Anda bernama 'model_klasifikasibuah.keras', biarkan seperti ini.
 model = tf.keras.models.load_model('model_klasifikasibuah.keras')
-# Sesuaikan label dengan hasil print(data_cat) saat training
-labels = ['Apel', 'Jeruk', 'Pisang', 'Alpukat', 'Lainnya'] 
 
-st.title("🍎 Ridwan AI")
+# 2. Daftar Label (SESUAIKAN URUTANNYA dengan hasil training Anda)
+labels = ['Apel', 'Jeruk', 'Pisang', 'Alpukat', 'Buah Lain']
 
-file = st.file_uploader("Unggah foto buah...", type=["jpg", "png", "jpeg"])
+# Tampilan UI
+st.set_page_config(page_title="Fruit Scanner AI", page_icon="🍎")
+st.title("🍎 Identifikasi Nama Buah")
+st.write("Unggah foto buah, dan AI akan mendeteksi jenisnya.")
 
-if file is not None:
-    image = Image.open(file).convert('RGB') # Pastikan format RGB
-    st.image(image, caption="Gambar yang dipilih", use_container_width=True)
-    
-    # --- BAGIAN PERBAIKAN ---
-    # 1. Resize gambar tepat ke 96x96 (sesuai training)
-    img = image.resize((96, 96)) 
-    
-    # 2. Ubah ke array dan normalisasi jika diperlukan
-    img_array = tf.keras.utils.img_to_array(img)
-    
-    # 3. Tambahkan dimensi batch (menjadi 1, 96, 96, 3)
-    img_bat = tf.expand_dims(img_array, 0)
-    
-    # 4. Prediksi
-    predictions = model.predict(img_bat)
-    score = tf.nn.softmax(predictions[0]) # Gunakan softmax untuk probabilitas
-    
-    hasil = labels[np.argmax(score)]
-    akurasi = 100 * np.max(score)
-    
-    st.success(f"Hasil: **{hasil}** ({akurasi:.2f}%)")mpy as np
-
-st.title("Identifikasi Nama Buah")
-st.write("Unggah foto buah, dan AI akan menebak namanya!")
-
-# Load model yang sudah dilatih
-model = tf.keras.models.load_model('model_klasifikasibuah.keras')
-labels = ['Apple', 'Banana', 'avocado', 'cherry', 'kiwi', 'mango', 'orange', 'pinenapple', 'strawberries', 'watermelon'] # Sesuaikan dengan dataset Anda
-
+# Upload File
 uploaded_file = st.file_uploader("Pilih gambar...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Gambar yang diunggah', use_column_width=True)
+    # Membuka dan menampilkan gambar
+    image = Image.open(uploaded_file).convert('RGB')
+    st.image(image, caption='Gambar yang diunggah', use_container_width=True)
+    
+    # Preprocessing Gambar
+    # Pastikan ukuran (96, 96) sama dengan saat Anda melatih model di Colab
+    img = image.resize((96, 96)) 
+    img_array = tf.keras.utils.img_to_array(img)
+    img_bat = np.expand_dims(img_array, axis=0) # Tambahkan dimensi batch (1, 96, 96, 3)
 
-    # Pre-processing gambar agar sesuai input model
-    img = image.resize((224, 224))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-
-    # Prediksi
-    predictions = model.predict(img_array)
-    result = labels[np.argmax(predictions)]
-
-    st.success(f"Hasil Identifikasi: **{result}**")
+    # Melakukan Prediksi
+    with st.spinner('Sedang menganalisis...'):
+        predictions = model.predict(img_bat)
+        score = tf.nn.softmax(predictions[0]) # Mengubah output menjadi probabilitas
+        
+    # Menampilkan Hasil
+    hasil = labels[np.argmax(score)]
+    presentase = 100 * np.max(score)
+    
+    st.success(f"Hasil Prediksi: **{hasil}**")
+    st.info(f"Tingkat Keyakinan: **{presentase:.2f}%**")
