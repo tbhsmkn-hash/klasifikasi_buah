@@ -12,7 +12,7 @@ labels = ['Apple', 'Banana', 'avocado', 'cherry', 'kiwi', 'mango', 'orange', 'pi
 
 # Tampilan UI
 st.set_page_config(page_title="Fruit Scanner AI", page_icon="🍎")
-st.title("🍎 Identifikasi Nama Buah")
+st.title("🍎 Ridwan AI Identifikasi 7 Nama Buah")
 st.write("Unggah foto buah, dan AI akan mendeteksi jenisnya.")
 
 # Upload File
