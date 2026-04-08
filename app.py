@@ -8,7 +8,7 @@ from PIL import Image
 model = tf.keras.models.load_model('model_klasifikasibuah.keras')
 
 # 2. Daftar Label (SESUAIKAN URUTANNYA dengan hasil training Anda)
-labels = ['Apel', 'Jeruk', 'Pisang', 'Alpukat', 'Buah Lain']
+labels = ['Apple', 'Banana', 'avocado', 'cherry', 'kiwi', 'mango', 'orange', 'pinenapple', 'strawberries', 'watermelon']
 
 # Tampilan UI
 st.set_page_config(page_title="Fruit Scanner AI", page_icon="🍎")
